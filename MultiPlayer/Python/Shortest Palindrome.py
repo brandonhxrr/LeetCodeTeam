@@ -27,7 +27,3 @@ class Solution:
             left_s = left_s + s[n - 1 - i]
 
         return left_s + s
-    
-
-
-
