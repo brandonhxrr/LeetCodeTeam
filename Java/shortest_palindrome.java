@@ -1,33 +1,44 @@
-class Solution {
-    boolean validPalindrome(int l, int r, String s) {
-        while (l < r && s.charAt(l) == s.charAt(r)) {
-            l++;
-            r--;
-        }
-        return l >= r;
-    }
-
+public class Solution {
     public String shortestPalindrome(String s) {
         int n = s.length();
         if (n <= 1) return s;
 
-        int maxLeftPalindromeSize = 1;
+        String rev = new StringBuilder(s).reverse().toString();
+        String new_s = s + "#" + rev;
+        int new_n = new_s.length();
 
-        for (int i = n - 1; i >= 0; i--) {
-            if (s.charAt(0) == s.charAt(i)) {
-                if (validPalindrome(0, i, s)) {
-                    maxLeftPalindromeSize = i + 1;
-                    break;
-                }
-            }
-        }
+        int[] lps = new int[new_n];
 
+        preProcessLPS(new_s, lps);
+
+        int maxLeftPalindromeSize = lps[new_n - 1];
         int m = n - maxLeftPalindromeSize;
         StringBuilder leftS = new StringBuilder();
+
         for (int i = 0; i < m; i++) {
             leftS.append(s.charAt(n - 1 - i));
         }
 
         return leftS.toString() + s;
+    }
+
+    private void preProcessLPS(String new_s, int[] lps) {
+        int j = 0;
+        int n = lps.length;
+        lps[0] = 0;
+
+        for (int i = 1; i < n; i++) {
+            if (new_s.charAt(i) == new_s.charAt(j)) {
+                j++;
+                lps[i] = j;
+            } else {
+                if (j != 0) {
+                    j = lps[j - 1];
+                    i--; // to stay at the same index
+                } else {
+                    lps[i] = 0;
+                }
+            }
+        }
     }
 }
