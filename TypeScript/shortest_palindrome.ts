@@ -1,31 +1,41 @@
 function shortestPalindrome(s: string): string {
     const n = s.length;
-    if(n<=1) return s;
+    if (n <= 1) return s;
 
-    const validPalindrome = (l: number, r: number): boolean => {
-        while(l<r && s[l]==s[r]){
-            l++;
-            r--;
-        }
-        return !(l<r);
-    };
+    const rev = s.split('').reverse().join('');
+    const new_s = s + '#' + rev;
+    const new_n = new_s.length;
 
-    let maxLeftPalindromeSize = 1;
+    const lps = new Array(new_n).fill(0);
 
-    for(let i=n-1; i>=0; i--){
-        if(s[0] == s[i]){
-            if(validPalindrome(0,i)){
-                maxLeftPalindromeSize = i+1;
-                break;
+    // Lambda function for preprocessing LPS
+    const preProcessLPS = () => {
+        let j = 0;
+        lps[0] = 0;
+
+        for (let i = 1; i < new_n; i++) {
+            if (new_s[i] === new_s[j]) {
+                j++;
+                lps[i] = j;
+            } else {
+                if (j !== 0) {
+                    j = lps[j - 1];
+                    i--; // to stay at the same index
+                } else {
+                    lps[i] = 0;
+                }
             }
         }
-    }
+    };
 
-    const m = n-maxLeftPalindromeSize;
+    preProcessLPS();
+
+    const maxLeftPalindromeSize = lps[new_n - 1];
+    const m = n - maxLeftPalindromeSize;
     let leftS = '';
 
-    for(let i=0; i<m; i++){
-        leftS = leftS + s[n-1-i];
+    for (let i = 0; i < m; i++) {
+        leftS = leftS + s[n - 1 - i];
     }
 
     return leftS + s;
