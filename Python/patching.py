@@ -1,75 +1,29 @@
-
-from typing import List
-
-
 class Solution:
-    def min_Patches(self, nums: List[int], n: int) -> int:
-        result: int = 0
-        #max value that could be cover on the list
-        max_covered: int = 0 #long int var
+    def minPatches(self, nums: List[int], n: int) -> int:
+        """
+        Calculate the minimum number of patches required to ensure that every
+        integer from 1 to n can be represented as a sum of elements in the array nums.
+        Args:
+            nums (List[int]): A sorted list of positive integers representing the current array.
+            n (int): The target number up to which every integer should be covered.
+        Returns:
+            int: The minimum number of patches needed.
+        """
+        result = 0 # To keep track of the number of patches needed
+        maxCovered = 0 # The maximum value that can be covered with the current array
+        index = 0 # Index to iterate through the nums array
 
-        #convert list in
-        while(max_covered < n):
-            can_cover: bool = False
-            sum: int = 0 #long int var
-
-            #check if it can cover the next number using the numbers in nums
-            for num in nums:
-                #if num is bigger than the next number it needs to cover, break loop
-                if num > (max_covered + 1):
-                    break
-                
-                sum += num
-
-                if sum >= (max_covered + 1):
-                    can_cover = True
-                    break
-            
-            #if we cant cover next number, insert patch
-            if not can_cover:
-                patch: int = max_covered + 1
-                #position where the patch is going to be inserted
-                insert_position: int = self.__find_insert_position(nums, patch)
-
-                #insert patch in list
-                nums = self.__insert_at_position(nums, patch, insert_position)
-
-                #debug
-                print(f"Inserted patch: {patch} -> {nums}")
-
-                #update max covered value
-                max_covered += patch
-                result += 1
+        # Continue until we have covered all values up to n
+        while(maxCovered < n):
+            # If the current index is within bounds and the current number is <= maxCovered + 1
+            if(index < len(nums) and nums[index] <= maxCovered + 1):
+                # Extend the range of covered values by including nums[index]
+                maxCovered += nums[index]
+                index+=1 # Move to the next number in the array
             else:
-                #if we can cover the next number, update max covered value
-                max_covered += nums[0]
-        
+                # If we can't cover maxCovered + 1, we need to add a patch
+                patch = maxCovered + 1 # The value of the patch we need to add
+                maxCovered += patch # Extend the range of covered values by including the patch
+                result+=1 # Increment the patch count
+        # Return the total number of patches needed
         return result
-    
-    '''
-        Find position that will be required to insert patch
-        :params nums: list where the patch is going to be inserted
-        :params elements: int value that is going to be inserted
-        :return: int position
-    '''
-    def __find_insert_position(self, nums: List[int], element: int) -> int:
-        pos: int = 0
-
-        while(pos < nums.length and nums[pos] < element):
-            pos += 1
-        
-        return pos
-    
-    
-    def __insert_at_position(self, nums: List[int], element: int, position: int) -> List[int]:
-        new_nums: List[int] = []
-
-        for i in range(0,position):
-            new_nums[i] = nums[i]
-        
-        new_nums[position] = element
-
-        for i in (position, len(nums)):
-            new_nums[i + 1] = nums[i]
-
-        return new_nums
