@@ -1,60 +1,38 @@
 class Solution {
+  /**
+   * Calculates the minimum number of patches required to cover all numbers
+   * from 1 to `n` using the given sorted array `nums`.
+   *
+   * A patch is a number that can be added to the array `nums` to extend the
+   * range of numbers that can be formed by summing the elements of `nums`.
+   *
+   * @param nums An array of positive integers, sorted in non-decreasing order.
+   * @param n    The maximum number to be covered.
+   * @return The minimum number of patches required to cover all numbers from 1 to
+   *         `n`.
+   */
   public int minPatches(int[] nums, int n) {
-    int result = 0;
-    long maxCovered = 0; // Máximo valor que se puede cubrir con el arreglo actual
+    int result = 0; // To keep track of the number of patches needed
+    long maxCovered = 0; // The maximum value that can be covered with the current array
+    int index = 0; // Index to iterate through the nums array
 
-    // Convertir el array en una lista para facilitar la manipulación
+    // Continue until we have covered all values up to n
     while (maxCovered < n) {
-      boolean canCover = false;
-      long sum = 0;
-
-      // Verificar si podemos cubrir el siguiente número usando los números actuales
-      for (int num : nums) {
-        if (num > maxCovered + 1) {
-          break; // Si el número es mayor que el próximo número que necesitamos cubrir, salimos del bucle
-        }
-        sum += num;
-        if (sum >= maxCovered + 1) {
-          canCover = true;
-          break;
-        }
-      }
-
-      // Si no podemos cubrir el próximo número, insertar un parche
-      if (!canCover) {
-        long patch = maxCovered + 1;
-        // Insertar el parche en el array
-        nums = insertAtPosition(nums, (int) patch, findInsertPosition(nums, (int) patch));
-        System.out.println("Inserted patch: " + patch + " -> " + Arrays.toString(nums));
-        maxCovered += patch; // Actualizar el máximo valor cubierto
-        result++;
+      // If the current index is within bounds and the current number is <= maxCovered
+      // + 1
+      if (index < nums.length && nums[index] <= maxCovered + 1) {
+        // Extend the range of covered values by including nums[index]
+        maxCovered += nums[index];
+        index++; // Move to the next number in the array
       } else {
-        // Si podemos cubrir el próximo número, actualizar el máximo valor cubierto
-        maxCovered += nums[0];
+        // If we can't cover maxCovered + 1, we need to add a patch
+        long patch = maxCovered + 1; // The value of the patch we need to add
+        maxCovered += patch; // Extend the range of covered values by including the patch
+        result++; // Increment the patch count
       }
     }
 
+    // Return the total number of patches needed
     return result;
-  }
-
-  // Método para encontrar la posición correcta de inserción
-  private int findInsertPosition(int[] nums, int element) {
-    int pos = 0;
-    while (pos < nums.length && nums[pos] < element) {
-      pos++;
-    }
-    return pos;
-  }
-
-  private int[] insertAtPosition(int[] nums, int element, int position) {
-    int[] newNums = new int[nums.length + 1];
-    for (int i = 0; i < position; i++) {
-      newNums[i] = nums[i];
-    }
-    newNums[position] = element;
-    for (int i = position; i < nums.length; i++) {
-      newNums[i + 1] = nums[i];
-    }
-    return newNums;
   }
 }
